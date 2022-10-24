@@ -5,7 +5,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 中文名称：公民身份号码（原名：社会保障号码）
@@ -24,17 +26,21 @@ import java.util.Map;
  */
 public class CitizenIDNOUtils {
 
-    // 加权因子：公民身份号码中各位的加权因子，依次从左到右
-    private final static int[] W = {7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2};
-
-    // 校验码
-    private final static String[] X = {"1", "0", "X", "9", "8", "7", "6", "5", "4", "3", "2"};
+    // 长度
+    private static final int LENGTH = 18;
 
     // 字符集
-//    private final static char[] C = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'X'};
+    private static final String CHARACTERS = "0123456789";
+    private static final List<Character> CHARACTER_LIST = CHARACTERS.chars().mapToObj(c -> (char) c).collect(Collectors.toList());
+
+    // 加权因子：公民身份号码中各位的加权因子，依次从左到右
+    private static final int[] W = {7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2};
+
+    // 校验码
+    private static final String[] X = {"1", "0", "X", "9", "8", "7", "6", "5", "4", "3", "2"};
 
     // 省地址码
-    private final static Map<String, String> provinceNumbers = new HashMap<String, String>() {{
+    private static final Map<String, String> provinceNumbers = new HashMap<String, String>() {{
         put("11", "北京");
         put("12", "天津");
         put("13", "河北");
@@ -74,34 +80,47 @@ public class CitizenIDNOUtils {
         put("91", "国外");
     }};
 
-    // 号码长度
-    private final static int LENGTH = 18;
-
-    public static boolean validate(String cin) {
-        if (cin == null || cin.length() != LENGTH) {
+    public static boolean validate(String code) {
+        // 长度和字符
+        if (!validateLengthAndChars(code)) {
             return false;
         }
 
         // 地址码
-        if (!validateAddressCode(cin)) {
+        if (!validateAddressCode(code)) {
             return false;
         }
 
         // 出生日期
-        if (!validateBirthdate(cin)) {
+        if (!validateBirthdate(code)) {
             return false;
         }
 
         // 性别
-        if (!validateGender(cin)) {
+        if (!validateGender(code)) {
             return false;
         }
 
         // 校验位
-        return validateCheckNumber(cin);
+        return validateCheckNumber(code);
     }
 
-    public static boolean validateCheckNumber(String cin) {
+    private static boolean validateLengthAndChars(String cin) {
+        if (cin == null || cin.length() != LENGTH) {
+            return false;
+        }
+        char[] chars = cin.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+            if (!CHARACTER_LIST.contains(c)) {
+                return i == chars.length - 1 && c == 'X';
+            }
+        }
+
+        return true;
+    }
+
+    private static boolean validateCheckNumber(String cin) {
         int sum = 0;
         try {
             String masterNumber = cin.substring(0, 17); // 本体码
@@ -119,7 +138,7 @@ public class CitizenIDNOUtils {
     }
 
     // 行政区划代码：1~6位（由左到右）
-    public static boolean validateAddressCode(String cin) {
+    private static boolean validateAddressCode(String cin) {
         String provinceNumber = cin.substring(0, 2);
 
         return provinceNumbers.containsKey(provinceNumber);
@@ -194,7 +213,7 @@ public class CitizenIDNOUtils {
     }
 
     // 性别：17位（由左到右）
-    public static boolean validateGender(String cin) {
+    private static boolean validateGender(String cin) {
         String gender = cin.substring(16, 17);
         try {
             Integer.parseInt(gender);
@@ -230,7 +249,7 @@ public class CitizenIDNOUtils {
     }
 
     public static void main(String[] args) {
-        String[] cinArray = {"12010119900307310X", "12010119900307652X", "12010119900307564X", "120101199003078103", "120101199003070806"};
+        String[] cinArray = {"1201011990030731AX", "12010119900307652X", "12010119900307564X", "120101199003078103", "120101199003070806"};
 
         for (String cin : cinArray) {
             System.err.println(CitizenIDNOUtils.validate(cin));

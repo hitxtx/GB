@@ -11,20 +11,19 @@ import java.util.stream.Collectors;
  */
 public class OrganizationCodeUtils {
 
-    // 加权因子：依次从左到右
-    private final static int[] W = {3, 7, 9, 10, 5, 8, 4, 2};
-
-    // 代码字符集
-    private final static String C = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-    // 字符集， 0-9，A-Z
-    private final static List<Character> CHARACTER_LIST = C.chars().mapToObj(c -> (char) c).collect(Collectors.toList());
-
     // 长度
-    private final static int LENGTH = 9;
+    private static final int LENGTH = 9;
+
+    // 代码字符集 0-9，A-Z
+    private static final String CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    // 校验位
+    private static final List<Character> CHAR_LIST = CHARS.chars().mapToObj(c -> (char) c).collect(Collectors.toList());
+
+    // 加权因子：依次从左到右
+    private static final int[] W = {3, 7, 9, 10, 5, 8, 4, 2};
 
     public static boolean validate(String code) {
-        if (!validateLengthAndCharset(code)) {
+        if (!validateLengthAndChars(code)) {
             return false;
         }
 
@@ -32,12 +31,12 @@ public class OrganizationCodeUtils {
     }
 
     // 校验长度
-    private static boolean validateLengthAndCharset(String code) {
+    private static boolean validateLengthAndChars(String code) {
         if (code == null || code.length() != LENGTH) {
             return false;
         }
         for (char c : code.toCharArray()) {
-            if (!CHARACTER_LIST.contains(c)) {
+            if (!CHAR_LIST.contains(c)) {
                 return false;
             }
         }
@@ -45,7 +44,8 @@ public class OrganizationCodeUtils {
         return true;
     }
 
-    // 核对校验位
+    // 核对校验位：11 - SUM(a[i] * W[i]) % 11
+    // 10：'X', 11：0, other：1 ~ 9
     private static boolean validateCheckNumber(String code) {
         try {
             int sum = 0;
@@ -55,13 +55,13 @@ public class OrganizationCodeUtils {
             }
             int checkNumber = 11 - sum % 11;
 
-            int cn = Character.getNumericValue(c[c.length - 1]);
+            int x = Character.getNumericValue(c[c.length - 1]);
             if (checkNumber == 10) {
-                return Character.getNumericValue('X') == cn;
+                return Character.getNumericValue('X') == x;
             } else if (checkNumber == 11) {
-                return 0 == cn;
+                return 0 == x;
             } else {
-                return checkNumber == cn;
+                return checkNumber == x;
             }
         } catch (Exception e) {
             return false;
