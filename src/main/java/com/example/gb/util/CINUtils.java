@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * <p>
  * 台湾身份证 https://www.aicesu.cn/twcard/
  */
-public class CitizenIDNOUtils {
+public class CINUtils {
 
     // 长度
     private static final int LENGTH = 18;
@@ -252,33 +252,33 @@ public class CitizenIDNOUtils {
         String[] cinArray = {"1201011990030731AX", "12010119900307652X", "12010119900307564X", "120101199003078103", "120101199003070806"};
 
         for (String cin : cinArray) {
-            System.err.println(CitizenIDNOUtils.validate(cin));
+            System.err.println(CINUtils.validate(cin));
         }
 
         for (String cin : cinArray) {
             System.err.println("--------------------------------------");
             System.err.println("--------------------------------------");
             // addressCode
-            System.err.println("地址码：" + CitizenIDNOUtils.getAddressCode(cin));
+            System.err.println("地址码：" + CINUtils.getAddressCode(cin));
             System.err.println();
             // birthdate
-            System.err.println("出生日期[S]：" + CitizenIDNOUtils.getBirthdateString(cin));
-            System.err.println("出生日期[LD]：" + CitizenIDNOUtils.getBirthdateLocalDate(cin));
-            System.err.println("出生日期[D]：" + CitizenIDNOUtils.getBirthdate(cin));
+            System.err.println("出生日期[S]：" + CINUtils.getBirthdateString(cin));
+            System.err.println("出生日期[LD]：" + CINUtils.getBirthdateLocalDate(cin));
+            System.err.println("出生日期[D]：" + CINUtils.getBirthdate(cin));
             System.err.println();
 
-            System.err.println("出生日期[yyyy]：" + CitizenIDNOUtils.getBirthdateYear(cin));
-            System.err.println("出生日期[MM]：" + CitizenIDNOUtils.getBirthdateMonth(cin));
-            System.err.println("出生日期[dd]：" + CitizenIDNOUtils.getBirthdateDay(cin));
+            System.err.println("出生日期[yyyy]：" + CINUtils.getBirthdateYear(cin));
+            System.err.println("出生日期[MM]：" + CINUtils.getBirthdateMonth(cin));
+            System.err.println("出生日期[dd]：" + CINUtils.getBirthdateDay(cin));
             System.err.println();
 
             // gender
-            System.err.println("性别[I]：" + CitizenIDNOUtils.getGenderInteger(cin));
-            System.err.println("性别[B]：" + CitizenIDNOUtils.getGenderBoolean(cin));
-            System.err.println("性别[C]：" + CitizenIDNOUtils.getGender(cin));
+            System.err.println("性别[I]：" + CINUtils.getGenderInteger(cin));
+            System.err.println("性别[B]：" + CINUtils.getGenderBoolean(cin));
+            System.err.println("性别[C]：" + CINUtils.getGender(cin));
             System.err.println();
 
-            System.err.println("X：" + CitizenIDNOUtils.validateCheckNumber(cin));
+            System.err.println("X：" + CINUtils.validateCheckNumber(cin));
         }
 
     }
