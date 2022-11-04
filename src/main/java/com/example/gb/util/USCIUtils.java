@@ -173,7 +173,7 @@ public class USCIUtils {
         }
         int x = 31 - sum % 31;
 
-        return checkNumber == CHARS.toCharArray()[x % 31];
+        return checkNumber == CHARS.toCharArray()[x];
     }
 
     public static void main(String[] args) {
